@@ -1,0 +1,67 @@
+-- Display all patients
+SELECT *
+FROM Patient;
+
+-- Display appointments with patient and doctor names
+SELECT
+    a.AppointmentID,
+    a.AppointmentDate,
+    a.AppointmentTime,
+    p.PatientName AS Patient,
+    d.DoctorName AS Doctor
+FROM Appointment a
+INNER JOIN Patient p
+    ON a.PatientID = p.PatientID
+INNER JOIN Doctor d
+    ON a.DoctorID = d.DoctorID;
+
+-- Find all patients prescribed medication
+SELECT
+    p.PatientID,
+    p.PatientName,
+    m.MedicationName
+FROM Patient p
+INNER JOIN Appointment a
+    ON p.PatientID = a.PatientID
+INNER JOIN Appointment_Medication am
+    ON a.AppointmentID = am.AppointmentID
+INNER JOIN Medication m
+    ON am.MedicationID = m.MedicationID;
+
+-- Count the number of appointments for each doctor
+SELECT
+    d.DoctorID,
+    d.DoctorName,
+    COUNT(a.AppointmentID) AS Total_Appointments
+FROM Doctor d
+LEFT JOIN Appointment a
+    ON d.DoctorID = a.DoctorID
+GROUP BY d.DoctorID, d.DoctorName;
+
+-- Display notes written by doctors
+SELECT
+    a.AppointmentID,
+    a.AppointmentDate,
+    a.Notes AS NoteText,
+    d.DoctorName
+FROM Appointment a
+INNER JOIN Doctor d
+    ON a.DoctorID = d.DoctorID
+WHERE a.Notes IS NOT NULL
+  AND a.Notes <> '';
+
+-- Patients with upcoming appointments
+SELECT
+    p.PatientName,
+    a.AppointmentDate,
+    a.AppointmentTime
+FROM Patient p
+INNER JOIN Appointment a
+    ON p.PatientID = a.PatientID
+WHERE a.AppointmentDate >= CURDATE()
+ORDER BY a.AppointmentDate;
+
+
+
+
+
